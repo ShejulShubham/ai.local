@@ -1,19 +1,19 @@
 #!/bin/bash
 
 # Set up log file
-LOG_DIR="./debug_log"
-LOG_FILE="$LOG_DIR/wsl_check.log"
+LOG_DIR="./log"
+LOG_FILE="$LOG_DIR/check_sh.log"
 mkdir -p "$LOG_DIR"
-touch "$LOG_FILE"
+# touch "$LOG_FILE"
 
 # Start logging
 {
-echo "========== WSL Network Access Diagnostic =========="
+echo "========== Network Access Diagnostic =========="
 echo "Timestamp: $(date)"
 echo "---------------------------------------------------"
 
 # Get IP from resolv.conf
-NAMESERVER_IP=$(grep nameserver /etc/resolv.conf | awk '{print $2}')
+NAMESERVER_IP=$(hostname -I | awk '{print $1}')
 echo "Windows Host IP (from resolv.conf): $NAMESERVER_IP"
 
 # Get fallback IP if needed (Windows host gateway inside WSL)

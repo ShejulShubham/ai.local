@@ -1,8 +1,9 @@
 #!/bin/bash
 
-LOG_DIR="/debug_log"
-LOG_FILE="$LOG_DIR/stop.log"
+LOG_DIR="/log"
+LOG_FILE="$LOG_DIR/stop_sh.log"
 mkdir -p "$LOG_DIR"
+# touch "$LOG_FILE"
 
 log() {
   echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
@@ -20,30 +21,18 @@ fi
 log "Removing all containers..."
 ALL_CONTAINERS=$(docker ps -aq)
 if [ -n "$ALL_CONTAINERS" ]; then
-  docker rm -f $ALL_CONTAINERS
-  log "Containers removed: $ALL_CONTAINERS"
-else
-  log "No containers to remove."
+  docker rm -f $ALL_CONTAINERS 
 fi
-
-# log "Cleaning up unused Docker resources..."
-# docker system prune -af --volumes >> "$LOG_FILE" 2>&1
-# log "Docker system pruned."
 
 # Optional: Stop Docker service on Linux if available
 if command -v systemctl >/dev/null 2>&1; then
   if systemctl is-active --quiet docker; then
     sudo systemctl stop docker
-    log "Docker service stopped via systemctl."
-  else
-    log "Docker service not running or systemd not available."
   fi
 fi
 
 # WSL shutdown if inside WSL
 if grep -qEi "(microsoft|wsl)" /proc/version &>/dev/null; then
-  log "Detected WSL environment. Shutting down WSL..."
+  
   powershell.exe -Command "wsl --shutdown"
 fi
-
-log "Docker shutdown and cleanup complete."
